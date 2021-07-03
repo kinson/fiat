@@ -4,8 +4,11 @@ defmodule Fiat.MixProject do
   def project do
     [
       app: :fiat,
-      version: "0.1.1",
+      version: "0.1.2",
       elixir: "~> 1.12",
+      description: description(),
+      package: package(),
+      source_url: repo_url(),
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
@@ -18,11 +21,25 @@ defmodule Fiat.MixProject do
     ]
   end
 
+  defp description() do
+    "A simple cache server that leverages ets to hold cached objects."
+  end
+
   # Run "mix help deps" to learn about dependencies.
   defp deps do
+    []
+  end
+
+  defp package() do
     [
-      # {:dep_from_hexpm, "~> 0.3.0"},
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
+      # These are the default files included in the package
+      files: ~w(lib .formatter.exs mix.exs README* LICENSE*),
+      licenses: ["MIT"],
+      links: %{"GitHub" => repo_url()}
     ]
+  end
+
+  defp repo_url do
+    "https://github.com/kinson/fiat"
   end
 end

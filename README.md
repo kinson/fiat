@@ -1,6 +1,6 @@
 # Fiat
 
-**TODO: Add description**
+A simple caching server...because I said so :upside_down_face:.
 
 ## Installation
 
@@ -10,7 +10,7 @@ by adding `fiat` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:fiat, "~> 0.1.0"}
+    {:fiat, "~> 0.1.2"}
   ]
 end
 ```
