@@ -1,4 +1,4 @@
-name: Fiat Cache CI
+name: Fiat CI
 
 on:
   pull_request:

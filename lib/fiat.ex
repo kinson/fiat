@@ -1,6 +1,6 @@
-defmodule FiatCache.Server do
+defmodule Fiat.CacheServer do
   @moduledoc """
-  Documentation for `FiatCache`.
+  Documentation for `Fiat`.
   """
 
   use GenServer

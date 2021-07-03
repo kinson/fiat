@@ -1,9 +1,9 @@
-defmodule FiatCache.MixProject do
+defmodule Fiat.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :fiat_cache,
+      app: :fiat,
       version: "0.1.1",
       elixir: "~> 1.12",
       start_permanent: Mix.env() == :prod,
