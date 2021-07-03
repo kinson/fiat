@@ -1,4 +1,4 @@
-defmodule FiatCache do
+defmodule FiatCache.Server do
   @moduledoc """
   Documentation for `FiatCache`.
   """
