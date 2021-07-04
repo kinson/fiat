@@ -31,9 +31,8 @@ defmodule FiatTest do
   test "clears cache when ttl is done" do
     CacheServer.cache_object("dog", {"Henry", 4}, -1)
     CacheServer.cache_object("cat", {"Kali", 4}, 5)
-    Process.send(CacheServer, :clear_stale_objects, [])
+    CacheServer.clear_stale_objects()
 
-    :timer.sleep(10)
     assert is_nil(CacheServer.fetch_object("dog"))
     refute is_nil(CacheServer.fetch_object("cat"))
   end

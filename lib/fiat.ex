@@ -44,6 +44,10 @@ defmodule Fiat.CacheServer do
     end
   end
 
+  def clear_stale_objects() do
+    GenServer.call(__MODULE__, :clear_stale_objects)
+  end
+
   @impl true
   def init(_) do
     :ets.new(@table, [
@@ -64,9 +68,15 @@ defmodule Fiat.CacheServer do
     {:reply, result, Map.put(state, key, expires_at)}
   end
 
+  def handle_call(:clear_stale_objects, _from, state) do
+    new_state = remove_stale_objects(state)
+
+    {:reply, [], new_state}
+  end
+
   @impl true
   def handle_info(:clear_stale_objects, state) do
-    new_state = clear_stale(state)
+    new_state = remove_stale_objects(state)
 
     schedule_clear()
 
@@ -78,7 +88,7 @@ defmodule Fiat.CacheServer do
     :ets.delete_all_objects(@table)
   end
 
-  defp clear_stale(state) do
+  defp remove_stale_objects(state) do
     now = System.os_time(:second)
 
     {keys_to_delete, keep} =
