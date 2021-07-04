@@ -26,11 +26,14 @@ defmodule Fiat.CacheServer do
   end
 
   def fetch_object(cache_key) do
-    GenServer.call(__MODULE__, {:get, cache_key})
+    case :ets.lookup(@table, cache_key) do
+      [] -> nil
+      [{_, result}] -> result
+    end
   end
 
   def fetch_object(cache_key, query_fn, expires_in \\ 300) do
-    case GenServer.call(__MODULE__, {:get, cache_key}) do
+    case fetch_object(cache_key) do
       nil ->
         object = query_fn.()
         cache_object(cache_key, object, expires_in)
@@ -61,18 +64,21 @@ defmodule Fiat.CacheServer do
     {:reply, result, Map.put(state, key, expires_at)}
   end
 
-  def handle_call({:get, key}, _from, state) do
-    result =
-      case :ets.lookup(@table, key) do
-        [] -> nil
-        [{_, result}] -> result
-      end
+  @impl true
+  def handle_info(:clear_stale_objects, state) do
+    new_state = clear_stale(state)
 
-    {:reply, result, state}
+    schedule_clear()
+
+    {:noreply, new_state}
   end
 
   @impl true
-  def handle_info(:clear_stale_objects, state) do
+  def terminate(_, _) do
+    :ets.delete_all_objects(@table)
+  end
+
+  defp clear_stale(state) do
     now = System.os_time(:second)
 
     {keys_to_delete, keep} =
@@ -87,17 +93,10 @@ defmodule Fiat.CacheServer do
 
     Enum.each(keys_to_delete, &:ets.delete(@table, &1))
 
-    schedule_clear()
-
-    {:noreply, Enum.into(keep, Map.new())}
+    Enum.into(keep, Map.new())
   end
 
   defp schedule_clear() do
     Process.send_after(self(), :clear_stale_objects, @clear_interval)
-  end
-
-  @impl true
-  def terminate(_, _) do
-    :ets.delete_all_objects(@table)
   end
 end

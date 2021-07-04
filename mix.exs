@@ -4,7 +4,7 @@ defmodule Fiat.MixProject do
   def project do
     [
       app: :fiat,
-      version: "0.1.2",
+      version: "0.1.3",
       elixir: "~> 1.12",
       description: description(),
       package: package(),
@@ -27,7 +27,7 @@ defmodule Fiat.MixProject do
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
-    []
+    [{:benchee, "~> 1.0", only: :dev}]
   end
 
   defp package() do
