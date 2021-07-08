@@ -28,10 +28,12 @@ defmodule Fiat.CacheServer do
   @table :table
   @clear_interval :timer.seconds(5)
 
+  @doc false
   def start_link(_) do
     GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
   end
 
+  @doc false
   def start_link() do
     start_link([])
   end
@@ -41,8 +43,8 @@ defmodule Fiat.CacheServer do
 
   ## Examples
 
-    iex> Fiat.CacheServer.stop()
-    :ok
+      iex> Fiat.CacheServer.stop()
+      :ok
 
   """
   @spec stop() :: :ok
@@ -55,11 +57,11 @@ defmodule Fiat.CacheServer do
 
   ## Examples
 
-    iex> Fiat.CacheServer.cache_object("data", {"code", 2})
-    true
+      iex> Fiat.CacheServer.cache_object("data", {"code", 2})
+      true
 
-    iex> Fiat.CacheServer.cache_object("data", {"code", 2}, 10)
-    true
+      iex> Fiat.CacheServer.cache_object("data", {"code", 2}, 10)
+      true
 
   """
   @spec cache_object(term(), term(), integer()) :: true
@@ -76,12 +78,12 @@ defmodule Fiat.CacheServer do
 
   ## Examples
 
-    iex> Fiat.CacheServer.cache_object("data", {"code", 2})
-    iex> Fiat.CacheServer.fetch_object("data")
-    {"code", 2}
+      iex> Fiat.CacheServer.cache_object("data", {"code", 2})
+      iex> Fiat.CacheServer.fetch_object("data")
+      {"code", 2}
 
-    iex> Fiat.CacheServer.fetch_object("data_old")
-    nil
+      iex> Fiat.CacheServer.fetch_object("data_old")
+      nil
 
   """
   @spec fetch_object(term()) :: term() | nil
@@ -103,12 +105,12 @@ defmodule Fiat.CacheServer do
 
   ## Examples
 
-    iex> Fiat.CacheServer.cache_object("data", :data)
-    iex> Fiat.CacheServer.fetch_object("data", fn -> :ok end)
-    :data
+      iex> Fiat.CacheServer.cache_object("data", :data)
+      iex> Fiat.CacheServer.fetch_object("data", fn -> :ok end)
+      :data
 
-    iex> Fiat.CacheServer.fetch_object("data", fn -> :ok end)
-    :ok
+      iex> Fiat.CacheServer.fetch_object("data", fn -> :ok end)
+      :ok
 
   """
   @spec fetch_object(term(), (() -> term()), integer()) :: term()
@@ -129,8 +131,8 @@ defmodule Fiat.CacheServer do
 
   ## Examples
 
-    iex> Fiat.CacheServer.clear_stale_objects
-    []
+      iex> Fiat.CacheServer.clear_stale_objects
+      []
 
   """
   def clear_stale_objects() do
