@@ -1,6 +1,26 @@
 defmodule Fiat.CacheServer do
   @moduledoc """
-  Documentation for `Fiat`.
+  Fiat is a module to handle basic caching needs. Behind
+  the scenes it leverages an ets table to store objects
+  and a GenServer to maintain the state of the current
+  keys.
+
+  ## Usage
+
+  Add `Fiat.CacheServer` to your application's supervision
+  tree. Because `Fiat.CacheServer` is registered with its
+  module name, it can be accessed without providing a pid
+  to access the process.
+
+  For example:
+
+  ```elixir
+  children = [
+    ...
+    Fiat.CacheServer
+  ]
+  ...
+  ```
   """
 
   use GenServer
@@ -16,15 +36,55 @@ defmodule Fiat.CacheServer do
     start_link([])
   end
 
+  @doc """
+  Stops the GenServer.
+
+  ## Examples
+
+    iex> Fiat.CacheServer.stop()
+    :ok
+
+  """
+  @spec stop() :: :ok
   def stop do
     GenServer.stop(__MODULE__)
   end
 
+  @doc """
+  Caches an object using a cache_key.
+
+  ## Examples
+
+    iex> Fiat.CacheServer.cache_object("data", {"code", 2})
+    true
+
+    iex> Fiat.CacheServer.cache_object("data", {"code", 2}, 10)
+    true
+
+  """
+  @spec cache_object(term(), term(), integer()) :: true
   def cache_object(cache_key, object, expires_in \\ 300) do
     expires_at = System.os_time(:second) + expires_in
     GenServer.call(__MODULE__, {:set, cache_key, object, expires_at})
   end
 
+  @doc """
+  Fetches the cached object for a particular key.
+
+  Returns object if it exists in the cache, otherwise
+  returns `nil`.
+
+  ## Examples
+
+    iex> Fiat.CacheServer.cache_object("data", {"code", 2})
+    iex> Fiat.CacheServer.fetch_object("data")
+    {"code", 2}
+
+    iex> Fiat.CacheServer.fetch_object("data_old")
+    nil
+
+  """
+  @spec fetch_object(term()) :: term() | nil
   def fetch_object(cache_key) do
     case :ets.lookup(@table, cache_key) do
       [] -> nil
@@ -32,6 +92,26 @@ defmodule Fiat.CacheServer do
     end
   end
 
+  @doc """
+  Fetches the cached object for a particular key. If
+  the `cache_key` is not present in the cache, it
+  executes the provided `query_fn` paramter, stores
+  the result in the cache and returns it.
+
+  Returns either the cached object or the result of
+  the `query_fn` parameter.
+
+  ## Examples
+
+    iex> Fiat.CacheServer.cache_object("data", :data)
+    iex> Fiat.CacheServer.fetch_object("data", fn -> :ok end)
+    :data
+
+    iex> Fiat.CacheServer.fetch_object("data", fn -> :ok end)
+    :ok
+
+  """
+  @spec fetch_object(term(), (() -> term()), integer()) :: term()
   def fetch_object(cache_key, query_fn, expires_in \\ 300) do
     case fetch_object(cache_key) do
       nil ->
@@ -44,6 +124,15 @@ defmodule Fiat.CacheServer do
     end
   end
 
+  @doc """
+  Clears stale items from the cache.
+
+  ## Examples
+
+    iex> Fiat.CacheServer.clear_stale_objects
+    []
+
+  """
   def clear_stale_objects() do
     GenServer.call(__MODULE__, :clear_stale_objects)
   end
