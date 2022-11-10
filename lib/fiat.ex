@@ -133,12 +133,13 @@ defmodule Fiat.CacheServer do
 
   ## Examples
 
-    iex> Fiat.CacheServer.cache_object("data", {"code", 2})
-    iex> Fiat.CacheServer.remove_key("data")
-    true
+      iex> Fiat.CacheServer.cache_object("data", {"code", 2})
+      iex> Fiat.CacheServer.remove_key("data")
+      true
 
-    iex> Fiat.CacheServer.fetch_object("data")
-    nil
+      iex> Fiat.CacheServer.fetch_object("data")
+      nil
+
   """
   @spec remove_key(term()) :: true
   def remove_key(cache_key) do
