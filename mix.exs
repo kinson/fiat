@@ -4,8 +4,8 @@ defmodule Fiat.MixProject do
   def project do
     [
       app: :fiat,
-      version: "0.1.3",
-      elixir: "~> 1.12",
+      version: "1.0.0",
+      elixir: "~> 1.13",
       description: description(),
       package: package(),
       source_url: repo_url(),
