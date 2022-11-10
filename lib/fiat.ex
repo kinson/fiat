@@ -127,6 +127,25 @@ defmodule Fiat.CacheServer do
   end
 
   @doc """
+  Removes the given key from the cache if it exists.
+
+  Returns true even if key does not exist.
+
+  ## Examples
+
+    iex> Fiat.CacheServer.cache_object("data", {"code", 2})
+    iex> Fiat.CacheServer.remove_key("data")
+    true
+
+    iex> Fiat.CacheServer.fetch_object("data")
+    nil
+  """
+  @spec remove_key(term()) :: true
+  def remove_key(cache_key) do
+    GenServer.call(__MODULE__, {:remove, cache_key})
+  end
+
+  @doc """
   Clears stale items from the cache.
 
   ## Examples
@@ -157,6 +176,12 @@ defmodule Fiat.CacheServer do
     result = :ets.insert(@table, {key, object})
 
     {:reply, result, Map.put(state, key, expires_at)}
+  end
+
+  def handle_call({:remove, key}, _from, state) do
+    result = :ets.delete(@table, key)
+
+    {:reply, result, Map.delete(state, key)}
   end
 
   def handle_call(:clear_stale_objects, _from, state) do
